@@ -2,6 +2,7 @@ package me.kofesst.spring.souvenirstore.controller
 
 import me.kofesst.spring.souvenirstore.database.PositionDto
 import me.kofesst.spring.souvenirstore.model.form.PositionForm
+import me.kofesst.spring.souvenirstore.repository.EmployeesRepository
 import me.kofesst.spring.souvenirstore.repository.PositionsRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,11 +17,16 @@ import javax.validation.Valid
 @RequestMapping("/positions")
 class PositionsController @Autowired constructor(
     private val repository: PositionsRepository,
+    private val employeesRepository: EmployeesRepository,
 ) {
     @GetMapping
-    fun overview(model: Model): String {
+    fun overview(
+        @RequestParam(name = "referencedDelete", required = false) referenced: Boolean,
+        model: Model,
+    ): String {
         val positions = repository.findAll().asModels()
         model.addAttribute("models", positions)
+        model.addAttribute("referenced", referenced)
         return "positions/overview"
     }
 
@@ -63,7 +69,16 @@ class PositionsController @Autowired constructor(
     @PostMapping("/delete/{id}")
     fun delete(
         @PathVariable("id") id: Long,
+        model: Model,
     ): String {
+        val hasReference = employeesRepository.findAll().any { employee ->
+            employee.position.id == id
+        }
+
+        if (hasReference) {
+            return "redirect:/positions?referencedDelete=true"
+        }
+
         repository.deleteById(id)
         return "redirect:/positions"
     }

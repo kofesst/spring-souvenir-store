@@ -4,6 +4,8 @@
     <title>Должности</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link th:replace="blocks/links :: bootstrap"/>
+    <link th:replace="blocks/links :: bootstrap-js"/>
+    <link th:replace="blocks/links :: jquery"/>
 </head>
 <body>
 <div th:replace="blocks/headers :: hr-header(active='positions')"></div>
@@ -46,5 +48,33 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="referencedModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+     th:if="${referenced == true}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ошибка</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Не удалось удалить должность, так как есть сотрудники, находящиеся на данной должности.
+                    Чтобы удалить эту должность, сначала измените должность связанных сотрудников или
+                    вовсе удалите их.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Понятно</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:if="${referenced == true}" type="text/javascript">
+    $(document).ready(function () {
+        $('#referencedModal').modal('show')
+    })
+</script>
 </body>
 </html>
