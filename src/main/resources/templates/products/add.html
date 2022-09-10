@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Добавление товара</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap"/>
+    <link th:replace="blocks/links :: icons"/>
+    <style>
+        html, body, main {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+        }
+
+        main {
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+        }
+
+        main > form {
+            width: 100%;
+            max-width: 330px;
+            padding: 30px;
+            margin: auto;
+            border-radius: 20px;
+            background-color: #6c757d;
+        }
+
+        .input-group-text {
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="blocks/headers :: hr-header(active='products')"></div>
+<main>
+    <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
+          method="post"
+          th:action="'/products/' + ${id != null ? 'edit/' + id : 'add'}"
+          th:object="${product}">
+        <h4 class="mb-3" th:text="${id != null ? 'Изменение товара' : 'Новый товар'}"></h4>
+        <hr>
+        <div class="form-row align-items-center">
+            <div class="col-auto mb-2">
+                <label class="sr-only" for="title">Название товара</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">manage_search</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="title" placeholder="Кепка Z"
+                           th:field="*{title}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('title')}"
+                      th:errors="*{title}"></span>
+            </div>
+            <div class="col-auto mb-2">
+                <label class="sr-only" for="description">Описание товара</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">description</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="description" placeholder="Это черная кепка"
+                           th:field="*{description}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('description')}"
+                      th:errors="*{description}"></span>
+            </div>
+            <div class="col-auto mb-4">
+                <label class="sr-only" for="price">Стоимость товара (руб.)</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">payments</span>
+                        </div>
+                    </div>
+                    <input type="number" class="form-control" id="price" placeholder="250"
+                           th:field="*{price}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('price')}"
+                      th:errors="*{price}"></span>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary w-100"
+                        th:text="${id != null ? 'Сохранить' : 'Добавить'}"></button>
+            </div>
+        </div>
+    </form>
+</main>
+</body>
+</html>
