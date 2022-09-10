@@ -20,6 +20,16 @@ data class PositionForm(
     @field:Max(value = 1_000_000_000)
     var salary: Int? = null,
 ) {
+    companion object {
+        fun fromModel(model: Position) = with(model) {
+            PositionForm(
+                id = id,
+                title = title,
+                salary = salary
+            )
+        }
+    }
+
     fun toModel() = Position(
         id = id,
         title = title!!,

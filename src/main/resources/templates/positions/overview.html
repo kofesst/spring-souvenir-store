@@ -32,13 +32,15 @@
                 <div class="card-body">
                     <h5 class="card-title" th:text="${position.title}"></h5>
                     <p class="card-text" th:text="${position.toString()}"></p>
-                    <p class="card-text text-muted">
-                        <small>
-                            <a href="#">
-                                Подробнее...
-                            </a>
-                        </small>
-                    </p>
+                    <hr>
+                    <div class="row row-cols-2 flex-row-reverse">
+                        <form th:action="'/positions/delete/' + ${position.id}" method="post" class="col-auto">
+                            <button type="submit" class="btn btn-outline-danger">Удалить</button>
+                        </form>
+                        <form th:action="'/positions/edit/' + ${position.id}" method="get" class="col-auto">
+                            <button type="submit" class="btn btn-outline-primary">Изменить</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

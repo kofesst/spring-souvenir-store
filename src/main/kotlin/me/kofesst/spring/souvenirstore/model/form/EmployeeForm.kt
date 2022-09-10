@@ -35,6 +35,19 @@ data class EmployeeForm(
     @field:NotNull(message = "Это обязательное поле")
     var position: Long? = null,
 ) {
+    companion object {
+        fun fromModel(model: Employee) = with(model) {
+            EmployeeForm(
+                id = id,
+                firstName = firstName,
+                lastName = lastName,
+                middleName = middleName,
+                dateOfBirth = dateOfBirth,
+                position = position.id
+            )
+        }
+    }
+
     fun toModel(positions: List<Position>) = Employee(
         id = id,
         firstName = firstName!!,

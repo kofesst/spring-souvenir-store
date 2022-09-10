@@ -6,6 +6,7 @@ import me.kofesst.spring.souvenirstore.repository.EmployeesRepository
 import me.kofesst.spring.souvenirstore.repository.PositionsRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -43,16 +44,16 @@ class EmployeesController @Autowired constructor(
     }
 
     @GetMapping("/add")
-    fun add(position: EmployeeForm, model: Model): String {
+    fun add(employee: EmployeeForm, model: Model): String {
         val positions = positionsRepository.findAll().asModels()
         model.addAttribute("positions", positions)
-        model.addAttribute("employee", position)
+        model.addAttribute("employee", employee)
         return "employees/add"
     }
 
     @PostMapping("/add")
     fun add(
-        @Valid @ModelAttribute("employee") position: EmployeeForm,
+        @Valid @ModelAttribute("employee") employee: EmployeeForm,
         result: BindingResult,
         model: Model,
     ): String {
@@ -63,7 +64,48 @@ class EmployeesController @Autowired constructor(
         }
 
         val positions = positionsRepository.findAll().asModels()
-        repository.save(EmployeeDto.fromModel(position.toModel(positions)))
+        repository.save(EmployeeDto.fromModel(employee.toModel(positions)))
+        return "redirect:/employees"
+    }
+
+    @PostMapping("/delete/{id}")
+    fun delete(
+        @PathVariable("id") id: Long,
+    ): String {
+        repository.deleteById(id)
+        return "redirect:/employees"
+    }
+
+    @GetMapping("/edit/{id}")
+    fun edit(
+        @PathVariable("id") id: Long,
+        model: Model,
+    ): String {
+        val employee = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/employees"
+        model.addAttribute("id", id)
+        model.addAttribute("employee", EmployeeForm.fromModel(employee))
+
+        val positions = positionsRepository.findAll().asModels()
+        model.addAttribute("positions", positions)
+        return "employees/add"
+    }
+
+    @PostMapping("/edit/{id}")
+    fun edit(
+        @PathVariable("id") id: Long,
+        @Valid @ModelAttribute("employee") employee: EmployeeForm,
+        result: BindingResult,
+        model: Model,
+    ): String {
+        if (result.hasErrors()) {
+            val positions = positionsRepository.findAll().asModels()
+            model.addAttribute("id", id)
+            model.addAttribute("positions", positions)
+            return "employees/add"
+        }
+
+        val positions = positionsRepository.findAll().asModels()
+        repository.save(EmployeeDto.fromModel(employee.toModel(positions)))
         return "redirect:/employees"
     }
 }

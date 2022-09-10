@@ -5,6 +5,7 @@ import me.kofesst.spring.souvenirstore.model.form.PositionForm
 import me.kofesst.spring.souvenirstore.repository.PositionsRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -52,6 +53,41 @@ class PositionsController @Autowired constructor(
         result: BindingResult,
     ): String {
         if (result.hasErrors()) {
+            return "positions/add"
+        }
+
+        repository.save(PositionDto.fromModel(position.toModel()))
+        return "redirect:/positions"
+    }
+
+    @PostMapping("/delete/{id}")
+    fun delete(
+        @PathVariable("id") id: Long,
+    ): String {
+        repository.deleteById(id)
+        return "redirect:/positions"
+    }
+
+    @GetMapping("/edit/{id}")
+    fun edit(
+        @PathVariable("id") id: Long,
+        model: Model,
+    ): String {
+        val position = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/positions"
+        model.addAttribute("id", id)
+        model.addAttribute("position", PositionForm.fromModel(position))
+        return "positions/add"
+    }
+
+    @PostMapping("/edit/{id}")
+    fun edit(
+        @PathVariable("id") id: Long,
+        @Valid @ModelAttribute("position") position: PositionForm,
+        result: BindingResult,
+        model: Model,
+    ): String {
+        if (result.hasErrors()) {
+            model.addAttribute("id", id)
             return "positions/add"
         }
 

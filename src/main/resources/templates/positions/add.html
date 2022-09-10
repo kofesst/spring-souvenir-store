@@ -43,9 +43,10 @@
 <div th:replace="blocks/headers :: hr-header(active='positions')"></div>
 <main>
     <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
-          action="/positions/add" method="post"
+          method="post"
+          th:action="'/positions/' + ${id != null ? 'edit/' + id : 'add'}"
           th:object="${position}">
-        <h4 class="mb-3">Новая должность</h4>
+        <h4 class="mb-3" th:text="${id != null ? 'Изменение должности' : 'Новая должность'}"></h4>
         <hr>
         <div class="form-row align-items-center">
             <div class="col-auto mb-2">
@@ -79,7 +80,8 @@
                       th:errors="*{salary}"></span>
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary w-100">Добавить</button>
+                <button type="submit" class="btn btn-primary w-100"
+                        th:text="${id != null ? 'Сохранить' : 'Добавить'}"></button>
             </div>
         </div>
     </form>
