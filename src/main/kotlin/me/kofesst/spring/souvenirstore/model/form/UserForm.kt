@@ -13,7 +13,7 @@ data class UserForm(
     @field:NotBlank(message = "Поле не может быть пустым")
     @field:Size(max = 15, message = "Максимальная длина - 30 символов")
     @field:Pattern(regexp = "^.*[a-zA-Z].*$", message = "Пароль должен содержать хотя бы одну букву")
-    @field:Pattern(regexp = "^[a-zA-Z0-9]+\$", message = "Логин не должен содержать ничего кроме букв и цифр")
+    @field:Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Логин не должен содержать ничего кроме букв и цифр")
     var login: String? = null,
 
     @field:NotNull(message = "Это обязательное поле")
@@ -22,7 +22,7 @@ data class UserForm(
     @field:Pattern(regexp = "^.*\\d.*$", message = "Пароль должен содержать хотя бы одну цифру")
     @field:Pattern(regexp = "^.*[a-z].*$", message = "Пароль должен содержать хотя бы одну строчную букву")
     @field:Pattern(regexp = "^.*[A-Z].*$", message = "Пароль должен содержать хотя бы одну прописную букву")
-    @field:Pattern(regexp = "^[a-zA-Z0-9]+\$", message = "Пароль не должен содержать ничего кроме букв и цифр")
+    @field:Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Пароль не должен содержать ничего кроме букв и цифр")
     var password: String? = null,
 ) {
     companion object {
