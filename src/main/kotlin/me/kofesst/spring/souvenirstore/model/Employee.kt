@@ -10,6 +10,7 @@ data class Employee(
     val middleName: String,
     var dateOfBirth: Date,
     var position: Position,
+    var user: User,
 ) {
     val fullName: String get() = "$lastName $firstName $middleName"
     val age: Int get() = dateOfBirth yearsUntil Date()

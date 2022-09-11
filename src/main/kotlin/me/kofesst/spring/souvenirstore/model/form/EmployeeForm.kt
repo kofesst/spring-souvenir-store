@@ -5,10 +5,8 @@ import me.kofesst.spring.souvenirstore.model.Position
 import me.kofesst.spring.souvenirstore.util.YearsDifference
 import org.springframework.format.annotation.DateTimeFormat
 import java.util.*
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Past
-import javax.validation.constraints.Size
+import javax.validation.Valid
+import javax.validation.constraints.*
 
 data class EmployeeForm(
     private val id: Long = 0,
@@ -34,6 +32,9 @@ data class EmployeeForm(
 
     @field:NotNull(message = "Это обязательное поле")
     var position: Long? = null,
+
+    @field:Valid
+    var user: UserForm = UserForm(),
 ) {
     companion object {
         fun fromModel(model: Employee) = with(model) {
@@ -43,7 +44,8 @@ data class EmployeeForm(
                 lastName = lastName,
                 middleName = middleName,
                 dateOfBirth = dateOfBirth,
-                position = position.id
+                position = position.id,
+                user = UserForm.fromModel(model.user)
             )
         }
     }
@@ -54,6 +56,7 @@ data class EmployeeForm(
         lastName = lastName!!,
         middleName = middleName!!,
         dateOfBirth = dateOfBirth!!,
-        position = positions.first { it.id == position!! }
+        position = positions.first { it.id == position!! },
+        user = user.toModel()
     )
 }

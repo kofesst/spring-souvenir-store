@@ -1,9 +1,11 @@
 package me.kofesst.spring.souvenirstore.controller
 
 import me.kofesst.spring.souvenirstore.database.EmployeeDto
+import me.kofesst.spring.souvenirstore.database.UserDto
 import me.kofesst.spring.souvenirstore.model.form.EmployeeForm
 import me.kofesst.spring.souvenirstore.repository.EmployeesRepository
 import me.kofesst.spring.souvenirstore.repository.PositionsRepository
+import me.kofesst.spring.souvenirstore.repository.UsersRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -18,6 +20,7 @@ import javax.validation.Valid
 class EmployeesController @Autowired constructor(
     private val repository: EmployeesRepository,
     private val positionsRepository: PositionsRepository,
+    private val usersRepository: UsersRepository,
 ) {
     @GetMapping
     fun overview(model: Model): String {
@@ -53,7 +56,7 @@ class EmployeesController @Autowired constructor(
 
     @PostMapping("/add")
     fun add(
-        @Valid @ModelAttribute("employee") employee: EmployeeForm,
+        @Valid @ModelAttribute("employee") form: EmployeeForm,
         result: BindingResult,
         model: Model,
     ): String {
@@ -64,7 +67,11 @@ class EmployeesController @Autowired constructor(
         }
 
         val positions = positionsRepository.findAll().asModels()
-        repository.save(EmployeeDto.fromModel(employee.toModel(positions)))
+        val employee = form.toModel(positions)
+        val user = employee.user
+
+        employee.user = usersRepository.save(UserDto.fromModel(user)).toModel()
+        repository.save(EmployeeDto.fromModel(employee))
         return "redirect:/employees"
     }
 
@@ -72,7 +79,9 @@ class EmployeesController @Autowired constructor(
     fun delete(
         @PathVariable("id") id: Long,
     ): String {
+        val employee = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/employees"
         repository.deleteById(id)
+        usersRepository.deleteById(employee.user.id)
         return "redirect:/employees"
     }
 

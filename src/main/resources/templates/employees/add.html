@@ -49,6 +49,37 @@
         <h4 class="mb-3" th:text="${id != null ? 'Изменение сотрудника' : 'Новый сотрудник'}"></h4>
         <hr>
         <div class="form-row align-items-center">
+            <input type="hidden" th:field="*{user.id}">
+            <div class="col-auto mb-2" th:object="${employee.user}">
+                <label class="sr-only" for="login">Логин пользователя</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">badge</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="login" placeholder="employee123"
+                           th:field="*{login}" th:attr="readonly=${id != null}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('login')}"
+                      th:errors="*{login}"></span>
+            </div>
+            <div class="col-auto mb-2" th:object="${employee.user}">
+                <label class="sr-only" for="password">Пароль пользователя</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">password</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="password" placeholder="123Security123"
+                           th:field="*{password}" th:attr="readonly=${id != null}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('password')}"
+                      th:errors="*{password}"></span>
+            </div>
             <div class="col-auto mb-2">
                 <label class="sr-only" for="firstName">Имя сотрудника</label>
                 <div class="input-group mb-1">

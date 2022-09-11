@@ -27,6 +27,10 @@ data class EmployeeDto(
     @ManyToOne
     @JoinColumn(name = "position_id", referencedColumnName = "id_position")
     val position: PositionDto = PositionDto(),
+
+    @OneToOne(cascade = [CascadeType.MERGE])
+    @JoinColumn(name = "user_id", referencedColumnName = "id_user")
+    val user: UserDto = UserDto(),
 ) : BaseDto<Employee> {
     companion object {
         fun fromModel(model: Employee) = with(model) {
@@ -36,7 +40,8 @@ data class EmployeeDto(
                 lastName = lastName,
                 middleName = middleName,
                 dateOfBirth = dateOfBirth,
-                position = PositionDto.fromModel(position)
+                position = PositionDto.fromModel(position),
+                user = UserDto.fromModel(user)
             )
         }
     }
@@ -47,6 +52,7 @@ data class EmployeeDto(
         lastName = lastName,
         middleName = middleName,
         dateOfBirth = dateOfBirth,
-        position = position.toModel()
+        position = position.toModel(),
+        user = user.toModel()
     )
 }
