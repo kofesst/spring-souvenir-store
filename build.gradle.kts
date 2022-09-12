@@ -16,6 +16,9 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    implementation("org.springframework.boot:spring-boot-starter-security:2.7.3")
+
     // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
     implementation("org.hibernate.validator:hibernate-validator:6.2.4.Final")
 

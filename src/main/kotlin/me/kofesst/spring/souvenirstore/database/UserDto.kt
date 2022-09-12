@@ -1,6 +1,7 @@
 package me.kofesst.spring.souvenirstore.database
 
 import me.kofesst.spring.souvenirstore.model.User
+import me.kofesst.spring.souvenirstore.model.UserRole
 import javax.persistence.*
 
 @Entity
@@ -14,15 +15,20 @@ data class UserDto(
     @Column(name = "login", unique = true, nullable = false, length = 15)
     val login: String = "",
 
-    @Column(name = "password", nullable = false, length = 30)
+    @Column(name = "password", nullable = false, length = 255)
     val password: String = "",
-): BaseDto<User> {
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    val role: UserRole = UserRole.User,
+) : BaseDto<User> {
     companion object {
         fun fromModel(model: User) = with(model) {
             UserDto(
                 id = id,
                 login = login,
-                password = password
+                password = password,
+                role = role
             )
         }
     }
@@ -30,6 +36,7 @@ data class UserDto(
     override fun toModel() = User(
         id = id,
         login = login,
-        password = password
+        password = password,
+        role = role
     )
 }

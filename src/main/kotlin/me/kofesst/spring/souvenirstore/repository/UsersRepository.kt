@@ -5,4 +5,6 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UsersRepository : CrudRepository<UserDto, Long>
+interface UsersRepository : CrudRepository<UserDto, Long> {
+    fun findByLogin(login: String): UserDto?
+}
