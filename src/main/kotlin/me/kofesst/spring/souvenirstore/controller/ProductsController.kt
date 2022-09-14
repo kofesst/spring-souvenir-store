@@ -50,14 +50,20 @@ class ProductsController @Autowired constructor(
 
     @PostMapping("/add")
     fun add(
-        @Valid @ModelAttribute("product") product: ProductForm,
+        @Valid @ModelAttribute("product") productForm: ProductForm,
         result: BindingResult,
     ): String {
         if (result.hasErrors()) {
             return "products/add"
         }
 
-        repository.save(ProductDto.fromModel(product.toModel()))
+        val product = productForm.toModel()
+        if (repository.findByTitleIgnoreCase(product.title) != null) {
+            result.rejectValue("title", "error.existing_title", "Это название уже занято")
+            return "products/add"
+        }
+
+        repository.save(ProductDto.fromModel(product))
         return "redirect:/products"
     }
 

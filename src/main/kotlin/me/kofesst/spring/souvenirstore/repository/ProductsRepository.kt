@@ -5,4 +5,6 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProductsRepository : CrudRepository<ProductDto, Long>
+interface ProductsRepository : CrudRepository<ProductDto, Long> {
+    fun findByTitleIgnoreCase(title: String): ProductDto?
+}
