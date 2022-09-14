@@ -24,9 +24,8 @@ data class EmployeeDto(
     @Column(name = "date_of_birth")
     val dateOfBirth: Date = Date(),
 
-    @ManyToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "id_position")
-    val position: PositionDto = PositionDto(),
+    @Column(name = "salary", nullable = false)
+    val salary: Int = 0,
 
     @OneToOne(cascade = [CascadeType.MERGE])
     @JoinColumn(name = "user_id", referencedColumnName = "id_user")
@@ -40,7 +39,7 @@ data class EmployeeDto(
                 lastName = lastName,
                 middleName = middleName,
                 dateOfBirth = dateOfBirth,
-                position = PositionDto.fromModel(position),
+                salary = salary,
                 user = UserDto.fromModel(user)
             )
         }
@@ -52,7 +51,7 @@ data class EmployeeDto(
         lastName = lastName,
         middleName = middleName,
         dateOfBirth = dateOfBirth,
-        position = position.toModel(),
+        salary = salary,
         user = user.toModel()
     )
 }

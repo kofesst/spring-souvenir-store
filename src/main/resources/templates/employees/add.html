@@ -23,7 +23,7 @@
 
         main > form {
             width: 100%;
-            max-width: 330px;
+            max-width: 550px;
             padding: 30px;
             margin: auto;
             border-radius: 20px;
@@ -44,13 +44,13 @@
 <main>
     <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
           method="post"
-          th:action="'/employees/' + ${id != null ? 'edit/' + id : 'add'}"
-          th:object="${employee}">
+          th:action="'/employees/' + ${id != null ? 'edit/' + id : 'add'}">
         <h4 class="mb-3" th:text="${id != null ? 'Изменение сотрудника' : 'Новый сотрудник'}"></h4>
         <hr>
-        <div class="form-row align-items-center">
-            <input type="hidden" th:field="*{user.id}">
-            <div class="col-auto mb-2" th:object="${employee.user}">
+        <div class="row align-items-center">
+            <input type="hidden" th:field="*{employee.userId}">
+            <div class="col-6 mb-2" th:object="${user}"
+                 th:if="${user != null}">
                 <label class="sr-only" for="login">Логин пользователя</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -59,13 +59,14 @@
                         </div>
                     </div>
                     <input type="text" class="form-control" id="login" placeholder="employee123"
-                           th:field="*{login}" th:attr="readonly=${id != null}">
+                           th:field="*{login}">
                 </div>
                 <span class="sr-only" style="color: #dc3545"
                       th:if="${#fields.hasErrors('login')}"
                       th:errors="*{login}"></span>
             </div>
-            <div class="col-auto mb-2" th:object="${employee.user}">
+            <div class="col-6 mb-2" th:object="${user}"
+                 th:if="${user != null}">
                 <label class="sr-only" for="password">Пароль пользователя</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -80,7 +81,7 @@
                       th:if="${#fields.hasErrors('password')}"
                       th:errors="*{password}"></span>
             </div>
-            <div class="col-auto mb-2">
+            <div class="col-12 mb-2" th:object="${employee}">
                 <label class="sr-only" for="firstName">Имя сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -95,7 +96,7 @@
                       th:if="${#fields.hasErrors('firstName')}"
                       th:errors="*{firstName}"></span>
             </div>
-            <div class="col-auto mb-2">
+            <div class="col-12 mb-2" th:object="${employee}">
                 <label class="sr-only" for="lastName">Фамилия сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -110,7 +111,7 @@
                       th:if="${#fields.hasErrors('lastName')}"
                       th:errors="*{lastName}"></span>
             </div>
-            <div class="col-auto mb-2">
+            <div class="col-12 mb-2" th:object="${employee}">
                 <label class="sr-only" for="middleName">Отчество сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -125,7 +126,7 @@
                       th:if="${#fields.hasErrors('middleName')}"
                       th:errors="*{middleName}"></span>
             </div>
-            <div class="col-auto mb-2">
+            <div class="col-12 mb-2" th:object="${employee}">
                 <label class="sr-only" for="dateOfBirth">Дата рождения сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -140,7 +141,7 @@
                       th:if="${#fields.hasErrors('dateOfBirth')}"
                       th:errors="*{dateOfBirth}"></span>
             </div>
-            <div class="col-auto mb-4">
+            <div class="col-6 mb-4" th:object="${employee}">
                 <label class="sr-only" for="position">Должность сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -149,16 +150,31 @@
                         </div>
                     </div>
                     <select id="position" class="form-select"
-                            th:field="*{position}">
+                            th:field="*{role}">
                         <option th:value="${null}" selected>Выберите...</option>
                         <option th:each="position : ${positions}"
-                                th:value="${position.id}"
-                                th:text="${position.title}"></option>
+                                th:value="${position.name()}"
+                                th:text="${position.displayName}"></option>
                     </select>
                 </div>
                 <span class="sr-only" style="color: #dc3545"
-                      th:if="${#fields.hasErrors('position')}"
-                      th:errors="*{position}"></span>
+                      th:if="${#fields.hasErrors('role')}"
+                      th:errors="*{role}"></span>
+            </div>
+            <div class="col-6 mb-4" th:object="${employee}">
+                <label class="sr-only" for="salary">Зарплата сотрудника (руб.)</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">money</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="salary" placeholder="45000"
+                           th:field="*{salary}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('salary')}"
+                      th:errors="*{salary}"></span>
             </div>
             <div class="col-auto">
                 <button type="submit" class="btn btn-primary w-100"

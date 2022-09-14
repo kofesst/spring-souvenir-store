@@ -1,15 +1,15 @@
 package me.kofesst.spring.souvenirstore.model.form
 
 import me.kofesst.spring.souvenirstore.model.Employee
-import me.kofesst.spring.souvenirstore.model.Position
+import me.kofesst.spring.souvenirstore.model.UserRole
 import me.kofesst.spring.souvenirstore.util.YearsDifference
 import org.springframework.format.annotation.DateTimeFormat
 import java.util.*
-import javax.validation.Valid
 import javax.validation.constraints.*
 
 data class EmployeeForm(
     private val id: Long = 0,
+    var userId: Long = 0,
 
     @field:NotNull(message = "Это обязательное поле")
     @field:NotBlank(message = "Поле не может быть пустым")
@@ -31,32 +31,36 @@ data class EmployeeForm(
     var dateOfBirth: Date? = null,
 
     @field:NotNull(message = "Это обязательное поле")
-    var position: Long? = null,
+    @field:Positive(message = "Число должно быть положительным")
+    @field:Max(value = 1_000_000_000)
+    var salary: Int? = null,
 
-    @field:Valid
-    var user: UserForm = UserForm(),
+    @field:NotNull(message = "Это обязательное поле")
+    var role: String? = null,
 ) {
     companion object {
         fun fromModel(model: Employee) = with(model) {
             EmployeeForm(
                 id = id,
+                userId = user.id,
                 firstName = firstName,
                 lastName = lastName,
                 middleName = middleName,
                 dateOfBirth = dateOfBirth,
-                position = position.id,
-                user = UserForm.fromModel(model.user)
+                salary = salary,
+                role = user.role.authority
             )
         }
     }
 
-    fun toModel(positions: List<Position>) = Employee(
+    fun toModel() = Employee(
         id = id,
         firstName = firstName!!,
         lastName = lastName!!,
         middleName = middleName!!,
         dateOfBirth = dateOfBirth!!,
-        position = positions.first { it.id == position!! },
-        user = user.toModel()
+        salary = salary!!
     )
+
+    fun getRole() = UserRole.valueOf(role!!)
 }

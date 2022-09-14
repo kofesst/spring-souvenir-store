@@ -41,7 +41,6 @@ class AuthController @Autowired constructor(
     @GetMapping("/home")
     fun homeRedirect(): String {
         val roles = SecurityContextHolder.getContext().authentication.authorities
-        println(roles)
         val role = roles.map { UserRole.valueOf(it.authority) }.firstOrNull() ?: return "redirect:/error"
         return when (role) {
             UserRole.User -> "redirect:/user"

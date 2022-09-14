@@ -4,8 +4,8 @@ import me.kofesst.spring.souvenirstore.database.EmployeeDto
 import me.kofesst.spring.souvenirstore.database.UserDto
 import me.kofesst.spring.souvenirstore.model.UserRole
 import me.kofesst.spring.souvenirstore.model.form.EmployeeForm
+import me.kofesst.spring.souvenirstore.model.form.UserForm
 import me.kofesst.spring.souvenirstore.repository.EmployeesRepository
-import me.kofesst.spring.souvenirstore.repository.PositionsRepository
 import me.kofesst.spring.souvenirstore.repository.UsersRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +21,6 @@ import javax.validation.Valid
 @RequestMapping("/employees")
 class EmployeesController @Autowired constructor(
     private val repository: EmployeesRepository,
-    private val positionsRepository: PositionsRepository,
     private val usersRepository: UsersRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
@@ -50,33 +49,36 @@ class EmployeesController @Autowired constructor(
     }
 
     @GetMapping("/add")
-    fun add(employee: EmployeeForm, model: Model): String {
-        val positions = positionsRepository.findAll().asModels()
+    fun add(
+        employee: EmployeeForm,
+        user: UserForm,
+        model: Model,
+    ): String {
+        val positions = UserRole.positions()
         model.addAttribute("positions", positions)
         model.addAttribute("employee", employee)
+        model.addAttribute("user", user)
         return "employees/add"
     }
 
     @PostMapping("/add")
     fun add(
-        @Valid @ModelAttribute("employee") form: EmployeeForm,
+        @Valid @ModelAttribute("employee") employeeForm: EmployeeForm,
+        @Valid @ModelAttribute("user") userForm: UserForm,
         result: BindingResult,
         model: Model,
     ): String {
         if (result.hasErrors()) {
-            val positions = positionsRepository.findAll().asModels()
+            val positions = UserRole.positions()
             model.addAttribute("positions", positions)
             return "employees/add"
         }
 
-        val positions = positionsRepository.findAll().asModels()
-        val employee = form.toModel(positions)
-        val user = employee.user.let { user ->
-            user.copy(
-                password = passwordEncoder.encode(user.password),
-                role = UserRole.getFromPosition(employee.position)
-            )
-        }
+        val employee = employeeForm.toModel()
+        val user = userForm.toModel().copy(
+            password = passwordEncoder.encode(userForm.password),
+            role = employeeForm.getRole()
+        )
 
         employee.user = usersRepository.save(UserDto.fromModel(user)).toModel()
         repository.save(EmployeeDto.fromModel(employee))
@@ -102,7 +104,7 @@ class EmployeesController @Autowired constructor(
         model.addAttribute("id", id)
         model.addAttribute("employee", EmployeeForm.fromModel(employee))
 
-        val positions = positionsRepository.findAll().asModels()
+        val positions = UserRole.positions()
         model.addAttribute("positions", positions)
         return "employees/add"
     }
@@ -110,19 +112,24 @@ class EmployeesController @Autowired constructor(
     @PostMapping("/edit/{id}")
     fun edit(
         @PathVariable("id") id: Long,
-        @Valid @ModelAttribute("employee") employee: EmployeeForm,
+        @Valid @ModelAttribute("employee") employeeForm: EmployeeForm,
         result: BindingResult,
         model: Model,
     ): String {
         if (result.hasErrors()) {
-            val positions = positionsRepository.findAll().asModels()
+            val positions = UserRole.positions()
             model.addAttribute("id", id)
             model.addAttribute("positions", positions)
             return "employees/add"
         }
 
-        val positions = positionsRepository.findAll().asModels()
-        repository.save(EmployeeDto.fromModel(employee.toModel(positions)))
+        val user = usersRepository.findByIdOrNull(employeeForm.userId)?.copy(
+            role = employeeForm.getRole()
+        )?.toModel() ?: return "redirect:/employees"
+        val employee = employeeForm.toModel()
+
+        employee.user = user
+        repository.save(EmployeeDto.fromModel(employee))
         return "redirect:/employees"
     }
 }

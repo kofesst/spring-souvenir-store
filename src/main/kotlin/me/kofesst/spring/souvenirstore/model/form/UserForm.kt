@@ -1,7 +1,6 @@
 package me.kofesst.spring.souvenirstore.model.form
 
 import me.kofesst.spring.souvenirstore.model.User
-import me.kofesst.spring.souvenirstore.model.UserRole
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
@@ -9,7 +8,6 @@ import javax.validation.constraints.Size
 
 data class UserForm(
     var id: Long = 0,
-    var role: UserRole = UserRole.User,
 
     @field:NotNull(message = "Это обязательное поле")
     @field:NotBlank(message = "Поле не может быть пустым")
@@ -32,8 +30,7 @@ data class UserForm(
             UserForm(
                 id = id,
                 login = login,
-                password = password,
-                role = role
+                password = password
             )
         }
     }
@@ -41,7 +38,6 @@ data class UserForm(
     fun toModel() = User(
         id = id,
         login = login!!,
-        password = password!!,
-        role = role
+        password = password!!
     )
 }

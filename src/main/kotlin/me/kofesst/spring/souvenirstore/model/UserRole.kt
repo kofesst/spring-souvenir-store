@@ -2,21 +2,15 @@ package me.kofesst.spring.souvenirstore.model
 
 import org.springframework.security.core.GrantedAuthority
 
-enum class UserRole : GrantedAuthority {
-    User, HR, Cashier, Accountant, Director;
+enum class UserRole(val position: Boolean, val displayName: String) : GrantedAuthority {
+    User(position = false, displayName = "Пользователь"),
+    HR(position = true, displayName = "Кадровик"),
+    Cashier(position = true, displayName = "Кассир"),
+    Accountant(position = true, displayName = "Бухгалтер"),
+    Director(position = true, displayName = "Директор");
 
     companion object {
-        @Deprecated(
-            message = "В дальнейшем админу запретят добавлять и удалять должности, и код может измениться.",
-            replaceWith = ReplaceWith("")
-        )
-        fun getFromPosition(position: Position) = when (position.id) {
-            26L -> Director
-            28L -> Cashier
-            30L -> HR
-            31L -> Accountant
-            else -> User
-        }
+        fun positions() = UserRole.values().filter { it.position }
     }
 
     override fun getAuthority(): String = this.name
