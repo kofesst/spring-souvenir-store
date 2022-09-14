@@ -80,6 +80,13 @@ class EmployeesController @Autowired constructor(
             role = employeeForm.getRole()
         )
 
+        if (usersRepository.findByLogin(user.login) != null) {
+            result.rejectValue("login", "error.existing_login", "Данный логин уже используется")
+            val positions = UserRole.positions()
+            model.addAttribute("positions", positions)
+            return "employees/add"
+        }
+
         employee.user = usersRepository.save(UserDto.fromModel(user)).toModel()
         repository.save(EmployeeDto.fromModel(employee))
         return "redirect:/employees"
