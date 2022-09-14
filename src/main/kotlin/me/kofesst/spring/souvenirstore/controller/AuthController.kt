@@ -29,11 +29,21 @@ class AuthController @Autowired constructor(
         @Valid @ModelAttribute("user") form: UserForm,
         result: BindingResult,
     ): String {
+        if (result.hasErrors()) {
+            return "auth/registration"
+        }
+
         val user = form.toModel().let { user ->
             user.copy(
                 password = passwordEncoder.encode(user.password)
             )
         }
+
+        if (repository.findByLogin(user.login) != null) {
+            result.rejectValue("login", "error.existing_login", "Данный логин уже используется")
+            return "auth/registration"
+        }
+
         repository.save(UserDto.fromModel(user))
         return "redirect:/login"
     }
