@@ -24,13 +24,29 @@ data class UserForm(
     @field:Pattern(regexp = "^.*[A-Z].*$", message = "Пароль должен содержать хотя бы одну прописную букву")
     @field:Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Пароль не должен содержать ничего кроме букв и цифр")
     var password: String? = null,
+
+    @field:NotNull(message = "Это обязательное поле")
+    @field:NotBlank(message = "Поле не может быть пустым")
+    @field:Size(max = 30, message = "Максимальная длина - 30 символов")
+    var firstName: String? = null,
+
+    @field:NotNull(message = "Это обязательное поле")
+    @field:NotBlank(message = "Поле не может быть пустым")
+    @field:Size(max = 50, message = "Максимальная длина - 50 символов")
+    var lastName: String? = null,
+
+    @field:Size(max = 50, message = "Максимальная длина - 50 символов")
+    var middleName: String? = null,
 ) {
     companion object {
         fun fromModel(model: User) = with(model) {
             UserForm(
                 id = id,
                 login = login,
-                password = password
+                password = password,
+                firstName = firstName,
+                lastName = lastName,
+                middleName = middleName,
             )
         }
     }
@@ -38,6 +54,9 @@ data class UserForm(
     fun toModel() = User(
         id = id,
         login = login!!,
-        password = password!!
+        password = password!!,
+        firstName = firstName!!,
+        lastName = lastName!!,
+        middleName = middleName!!,
     )
 }

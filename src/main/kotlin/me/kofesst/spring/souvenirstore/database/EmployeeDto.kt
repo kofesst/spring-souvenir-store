@@ -12,15 +12,6 @@ data class EmployeeDto(
     @Column(name = "id_employee", unique = true, nullable = false)
     val id: Long = 0,
 
-    @Column(name = "first_name", length = 30, nullable = false)
-    val firstName: String = "",
-
-    @Column(name = "last_name", length = 50, nullable = false)
-    val lastName: String = "",
-
-    @Column(name = "middle_name", length = 30, nullable = true)
-    val middleName: String = "",
-
     @Column(name = "date_of_birth")
     val dateOfBirth: Date = Date(),
 
@@ -35,9 +26,6 @@ data class EmployeeDto(
         fun fromModel(model: Employee) = with(model) {
             EmployeeDto(
                 id = id,
-                firstName = firstName,
-                lastName = lastName,
-                middleName = middleName,
                 dateOfBirth = dateOfBirth,
                 salary = salary,
                 user = UserDto.fromModel(user)
@@ -47,9 +35,6 @@ data class EmployeeDto(
 
     override fun toModel() = Employee(
         id = id,
-        firstName = firstName,
-        lastName = lastName,
-        middleName = middleName,
         dateOfBirth = dateOfBirth,
         salary = salary,
         user = user.toModel()

@@ -41,7 +41,8 @@ class EmployeesController @Autowired constructor(
         }
 
         val employees = repository.findAll().asModels().filter { employee ->
-            employee.fullName.lowercase().contains(query.lowercase())
+//            employee.fullName.lowercase().contains(query.lowercase())
+            true
         }
         model.addAttribute("models", employees)
         model.addAttribute("query", query)

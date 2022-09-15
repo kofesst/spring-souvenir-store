@@ -19,14 +19,27 @@ data class ProductDto(
 
     @Column(name = "price", nullable = false, precision = 2)
     val price: Double = 0.0,
-): BaseDto<Product> {
+
+    @Column(name = "old_price", precision = 2)
+    val oldPrice: Double = 0.0,
+
+    @Column(name = "stock_amount", nullable = false)
+    val stockAmount: Int = 0,
+
+    @ManyToOne(cascade = [CascadeType.MERGE])
+    @JoinColumn(name = "category_id", nullable = false)
+    val category: ProductCategoryDto = ProductCategoryDto(),
+) : BaseDto<Product> {
     companion object {
         fun fromModel(model: Product) = with(model) {
             ProductDto(
                 id = id,
                 title = title,
                 description = description,
-                price = price
+                price = price,
+                oldPrice = oldPrice,
+                stockAmount = stockAmount,
+                category = ProductCategoryDto.fromModel(category)
             )
         }
     }
@@ -35,6 +48,9 @@ data class ProductDto(
         id = id,
         title = title,
         description = description,
-        price = price
+        price = price,
+        oldPrice = oldPrice,
+        stockAmount = stockAmount,
+        category = category.toModel()
     )
 }

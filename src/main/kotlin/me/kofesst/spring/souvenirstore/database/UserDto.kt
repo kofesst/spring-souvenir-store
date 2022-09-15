@@ -18,6 +18,15 @@ data class UserDto(
     @Column(name = "password", nullable = false, length = 255)
     val password: String = "",
 
+    @Column(name = "first_name", length = 30, nullable = false)
+    val firstName: String = "",
+
+    @Column(name = "last_name", length = 50, nullable = false)
+    val lastName: String = "",
+
+    @Column(name = "middle_name", length = 30, nullable = true)
+    val middleName: String? = null,
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false)
     val role: UserRole = UserRole.User,
@@ -28,6 +37,9 @@ data class UserDto(
                 id = id,
                 login = login,
                 password = password,
+                firstName = firstName,
+                lastName = lastName,
+                middleName = middleName,
                 role = role
             )
         }
@@ -37,6 +49,9 @@ data class UserDto(
         id = id,
         login = login,
         password = password,
+        firstName = firstName,
+        lastName = lastName,
+        middleName = middleName,
         role = role
     )
 }
