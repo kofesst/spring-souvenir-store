@@ -5,52 +5,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link th:replace="blocks/links :: bootstrap"/>
     <link th:replace="blocks/links :: icons"/>
-    <style>
-        html, body, main {
-            height: 100%;
-        }
-
-        body {
-            display: flex;
-            flex-flow: column;
-        }
-
-        main {
-            display: flex;
-            align-items: center;
-            flex: 1 1 auto;
-        }
-
-        main > form {
-            width: 100%;
-            max-width: 550px;
-            padding: 30px;
-            margin: auto;
-            border-radius: 20px;
-            background-color: #6c757d;
-        }
-
-        .input-group-text {
-            width: 40px;
-            height: 40px;
-            justify-content: center;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-    </style>
+    <style th:replace="blocks/styles :: form"></style>
 </head>
 <body class="bg-light">
 <div th:replace="blocks/headers :: hr-header(active='employees')"></div>
 <main>
     <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
           method="post"
-          th:action="'/employees/' + ${id != null ? 'edit/' + id : 'add'}">
+          th:action="'/hr/employees/' + ${id != null ? 'edit/' + id : 'add'}">
         <h4 class="mb-3" th:text="${id != null ? 'Изменение сотрудника' : 'Новый сотрудник'}"></h4>
         <hr>
         <div class="row align-items-center">
-            <input type="hidden" th:field="*{employee.userId}">
+            <input type="hidden" th:field="*{user.id}">
             <div class="col-6 mb-2" th:object="${user}"
-                 th:if="${user != null}">
+                 th:if="${id == null}">
                 <label class="sr-only" for="login">Логин пользователя</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -66,7 +34,7 @@
                       th:errors="*{login}"></span>
             </div>
             <div class="col-6 mb-2" th:object="${user}"
-                 th:if="${user != null}">
+                 th:if="${id == null}">
                 <label class="sr-only" for="password">Пароль пользователя</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -81,7 +49,7 @@
                       th:if="${#fields.hasErrors('password')}"
                       th:errors="*{password}"></span>
             </div>
-            <div class="col-12 mb-2" th:object="${employee}">
+            <div class="col-12 mb-2" th:object="${user}">
                 <label class="sr-only" for="firstName">Имя сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -96,7 +64,7 @@
                       th:if="${#fields.hasErrors('firstName')}"
                       th:errors="*{firstName}"></span>
             </div>
-            <div class="col-12 mb-2" th:object="${employee}">
+            <div class="col-12 mb-2" th:object="${user}">
                 <label class="sr-only" for="lastName">Фамилия сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -111,7 +79,7 @@
                       th:if="${#fields.hasErrors('lastName')}"
                       th:errors="*{lastName}"></span>
             </div>
-            <div class="col-12 mb-2" th:object="${employee}">
+            <div class="col-12 mb-2" th:object="${user}">
                 <label class="sr-only" for="middleName">Отчество сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -141,7 +109,7 @@
                       th:if="${#fields.hasErrors('dateOfBirth')}"
                       th:errors="*{dateOfBirth}"></span>
             </div>
-            <div class="col-6 mb-4" th:object="${employee}">
+            <div class="col-6 mb-4" th:object="${user}">
                 <label class="sr-only" for="position">Должность сотрудника</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -154,7 +122,7 @@
                         <option th:value="${null}" selected>Выберите...</option>
                         <option th:each="position : ${positions}"
                                 th:value="${position.name()}"
-                                th:text="${position.displayName}"></option>
+                                th:text="${position.getDisplayName()}"></option>
                     </select>
                 </div>
                 <span class="sr-only" style="color: #dc3545"

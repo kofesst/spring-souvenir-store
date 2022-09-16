@@ -12,6 +12,6 @@ data class Employee(
     val age: Int get() = dateOfBirth yearsUntil Date()
 
     override fun toString(): String {
-        return "Зарплата: $salary руб.\nВозраст: $age"
+        return "Должность: ${user.role.displayName}\nЗарплата: $salary руб.\nВозраст: $age"
     }
 }

@@ -10,6 +10,7 @@ import me.kofesst.spring.souvenirstore.repository.UsersRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -18,35 +19,30 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @Controller
-@RequestMapping("/employees")
+@RequestMapping("/hr/employees")
+@PreAuthorize("hasAnyAuthority('HR')")
 class EmployeesController @Autowired constructor(
     private val repository: EmployeesRepository,
     private val usersRepository: UsersRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
     @GetMapping
-    fun overview(model: Model): String {
-        val employees = repository.findAll().asModels()
-        model.addAttribute("models", employees)
-        return "employees/overview"
-    }
-
-    @PostMapping
-    fun search(
-        @RequestParam(name = "query") query: String,
+    fun overview(
+        @RequestParam("query") query: String?,
         model: Model,
     ): String {
-        if (query.isBlank()) {
-            return "redirect:/employees"
-        }
-
-        val employees = repository.findAll().asModels().filter { employee ->
-//            employee.fullName.lowercase().contains(query.lowercase())
-            true
+        val employees = repository.findAll().asModels().run {
+            if (query?.isNotBlank() == true) {
+                model.addAttribute("query", query)
+                filter { employee ->
+                    employee.user.fullName.lowercase().contains(query.lowercase())
+                }
+            } else {
+                this
+            }
         }
         model.addAttribute("models", employees)
-        model.addAttribute("query", query)
-        return "employees/overview"
+        return "pages/hr/employees/overview"
     }
 
     @GetMapping("/add")
@@ -58,8 +54,14 @@ class EmployeesController @Autowired constructor(
         val positions = UserRole.positions()
         model.addAttribute("positions", positions)
         model.addAttribute("employee", employee)
-        model.addAttribute("user", user)
-        return "employees/add"
+        model.addAttribute(
+            "user",
+            user.copy(
+                login = null,
+                password = null
+            )
+        )
+        return "pages/hr/employees/add"
     }
 
     @PostMapping("/add")
@@ -69,38 +71,23 @@ class EmployeesController @Autowired constructor(
         result: BindingResult,
         model: Model,
     ): String {
+        val positions = UserRole.positions()
+        model.addAttribute("positions", positions)
+
         if (result.hasErrors()) {
-            val positions = UserRole.positions()
-            model.addAttribute("positions", positions)
-            return "employees/add"
+            return "pages/hr/employees/add"
         }
 
         val employee = employeeForm.toModel()
-        val user = userForm.toModel().copy(
-            password = passwordEncoder.encode(userForm.password),
-            role = employeeForm.getRole()
-        )
-
+        val user = userForm.toModel(passwordEncoder)
         if (usersRepository.findByLogin(user.login) != null) {
             result.rejectValue("login", "error.existing_login", "Данный логин уже используется")
-            val positions = UserRole.positions()
-            model.addAttribute("positions", positions)
-            return "employees/add"
+            return "pages/hr/employees/add"
         }
 
         employee.user = usersRepository.save(UserDto.fromModel(user)).toModel()
         repository.save(EmployeeDto.fromModel(employee))
-        return "redirect:/employees"
-    }
-
-    @PostMapping("/delete/{id}")
-    fun delete(
-        @PathVariable("id") id: Long,
-    ): String {
-        val employee = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/employees"
-        repository.deleteById(id)
-        usersRepository.deleteById(employee.user.id)
-        return "redirect:/employees"
+        return "redirect:/hr/employees"
     }
 
     @GetMapping("/edit/{id}")
@@ -108,36 +95,47 @@ class EmployeesController @Autowired constructor(
         @PathVariable("id") id: Long,
         model: Model,
     ): String {
-        val employee = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/employees"
+        val employee = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/hr/employees"
         model.addAttribute("id", id)
         model.addAttribute("employee", EmployeeForm.fromModel(employee))
+        model.addAttribute("user", UserForm.fromModel(employee.user))
 
         val positions = UserRole.positions()
         model.addAttribute("positions", positions)
-        return "employees/add"
+        return "pages/hr/employees/add"
     }
 
     @PostMapping("/edit/{id}")
     fun edit(
         @PathVariable("id") id: Long,
         @Valid @ModelAttribute("employee") employeeForm: EmployeeForm,
+        @Valid @ModelAttribute("user") userForm: UserForm,
         result: BindingResult,
         model: Model,
     ): String {
+        val positions = UserRole.positions()
+        model.addAttribute("positions", positions)
+        model.addAttribute("id", id)
+
         if (result.hasErrors()) {
-            val positions = UserRole.positions()
-            model.addAttribute("id", id)
-            model.addAttribute("positions", positions)
-            return "employees/add"
+            return "pages/hr/employees/add"
         }
 
-        val user = usersRepository.findByIdOrNull(employeeForm.userId)?.copy(
-            role = employeeForm.getRole()
-        )?.toModel() ?: return "redirect:/employees"
         val employee = employeeForm.toModel()
-
+        val existing = usersRepository.findByIdOrNull(userForm.id) ?: return "redirect:/hr/employees"
+        val user = userForm.toModel(existing.toModel())
         employee.user = user
         repository.save(EmployeeDto.fromModel(employee))
-        return "redirect:/employees"
+        return "redirect:/hr/employees"
+    }
+
+    @PostMapping("/delete/{id}")
+    fun delete(
+        @PathVariable("id") id: Long,
+    ): String {
+        val employee = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/hr/employees"
+        repository.deleteById(id)
+        usersRepository.deleteById(employee.user.id)
+        return "redirect:/hr/employees"
     }
 }

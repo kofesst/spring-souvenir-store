@@ -16,7 +16,7 @@ data class User(
         get() = buildString {
             append("$lastName $firstName")
             if (middleName != null) {
-                append(middleName)
+                append(" $middleName")
             }
         }
 

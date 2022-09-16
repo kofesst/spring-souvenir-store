@@ -33,7 +33,7 @@ class AuthController @Autowired constructor(
             return "auth/registration"
         }
 
-        val user = form.toModel().let { user ->
+        val user = form.toModel(passwordEncoder).let { user ->
             user.copy(
                 password = passwordEncoder.encode(user.password)
             )
@@ -55,7 +55,7 @@ class AuthController @Autowired constructor(
         println(role)
         return when (role) {
             UserRole.User -> "redirect:/user"
-            UserRole.HR -> "redirect:/hr"
+            UserRole.HR -> "redirect:/hr/employees"
             UserRole.Cashier -> "redirect:/cashier"
             UserRole.Accountant -> "redirect:/accountant"
             UserRole.Director -> "redirect:/employees"
