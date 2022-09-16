@@ -24,7 +24,7 @@ class WebSecurityConfig @Autowired constructor(
     fun securityFilterChain(security: HttpSecurity): SecurityFilterChain =
         security.authorizeHttpRequests { requests ->
             requests
-                .antMatchers("/login", "/registration").permitAll()
+                .antMatchers("/login", "/registration", "/logout").permitAll()
                 .anyRequest().authenticated()
         }.formLogin { form ->
             form
@@ -33,10 +33,15 @@ class WebSecurityConfig @Autowired constructor(
                 .permitAll()
         }.logout { logout ->
             logout
+                .logoutSuccessUrl("/login")
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
                 .permitAll()
         }.exceptionHandling { configurer ->
             configurer.accessDeniedPage("/access-denied")
-        }.userDetailsService(userDetailsService()).build()
+        }.userDetailsService(
+            userDetailsService()
+        ).csrf().disable().build()
 
     @Bean
     fun userDetailsService(): UserDetailsService {
