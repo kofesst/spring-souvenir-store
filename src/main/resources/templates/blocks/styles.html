@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style th:fragment="form">
+        html, body, main {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+        }
+
+        main {
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+        }
+
+        main > form {
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            margin: auto;
+            border-radius: 20px;
+            background-color: #6c757d;
+        }
+
+        .input-group-text {
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>
