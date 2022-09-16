@@ -23,30 +23,22 @@ class CategoriesController @Autowired constructor(
 ) {
     @GetMapping
     fun overview(
+        @RequestParam("query") query: String?,
         model: Model,
     ): String {
-        val products = productsRepository.findAll().asModels()
-        model.addAttribute("models", repository.findAll())
-        model.addAttribute("getProductsSize", { categoryId: Long ->
-            products.filter { it.category.id == categoryId }.size
-        })
-        return "pages/manager/categories/overview"
-    }
-
-    @PostMapping
-    fun search(
-        @RequestParam(name = "query") query: String,
-        model: Model,
-    ): String {
-        if (query.isBlank()) {
-            return "redirect:/manager/overview"
+        val categoriesWithProductsCount = repository.findAll().asModels().run {
+            if (query?.isNotBlank() == true) {
+                model.addAttribute("query", query)
+                filter { category ->
+                    category.displayName.lowercase().contains(query.lowercase())
+                }
+            } else {
+                this
+            }
+        }.map { category ->
+            category to productsRepository.countByCategory_Id(category.id)
         }
-
-        val categories = repository.findAll().asModels().filter { category ->
-            category.displayName.lowercase().contains(query.lowercase())
-        }
-        model.addAttribute("models", categories)
-        model.addAttribute("query", query)
+        model.addAttribute("models", categoriesWithProductsCount)
         return "pages/manager/categories/overview"
     }
 
