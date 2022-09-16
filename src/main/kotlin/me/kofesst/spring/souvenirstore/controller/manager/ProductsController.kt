@@ -22,27 +22,22 @@ class ProductsController @Autowired constructor(
     private val categoriesRepository: CategoriesRepository,
 ) {
     @GetMapping
-    fun overview(model: Model): String {
-        val products = repository.findAll().asModels()
-        model.addAttribute("models", products)
-        return "pages/manager/products/overview"
-    }
-
-    @PostMapping
-    fun search(
-        @RequestParam(name = "query") query: String,
+    fun overview(
+        @RequestParam("query") query: String?,
         model: Model,
     ): String {
-        if (query.isBlank()) {
-            return "redirect:/manager/products"
-        }
-
-        val products = repository.findAll().asModels().filter { product ->
-            product.title.lowercase().contains(query.lowercase()) ||
-                    product.description.lowercase().contains(query.lowercase())
+        val products = repository.findAll().asModels().run {
+            if (query?.isNotBlank() == true) {
+                model.addAttribute("query", query)
+                filter { product ->
+                    product.title.lowercase().contains(query.lowercase()) ||
+                            product.description.lowercase().contains(query.lowercase())
+                }
+            } else {
+                this
+            }
         }
         model.addAttribute("models", products)
-        model.addAttribute("query", query)
         return "pages/manager/products/overview"
     }
 

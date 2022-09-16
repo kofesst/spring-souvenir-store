@@ -9,7 +9,7 @@
 <div th:replace="blocks/headers :: manager-header(active='products')"></div>
 <div class="container">
     <div class="row">
-        <form action="/manager/products" method="post"
+        <form action="/manager/products" method="get"
               class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
             <input type="search" class="form-control" placeholder="Поиск товара" aria-label="Search"
                    name="query" th:value="${query}">
