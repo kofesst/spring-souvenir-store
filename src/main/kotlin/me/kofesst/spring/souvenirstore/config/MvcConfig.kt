@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class MvcConfig : WebMvcConfigurer {
     override fun addViewControllers(registry: ViewControllerRegistry) {
+        registry.addViewController("/access-denied").setViewName("blocks/access-denied")
         registry.addViewController("/login").setViewName("auth/login")
     }
 }

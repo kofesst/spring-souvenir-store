@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Доступ запрещен</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap"/>
+    <style>
+        html, body, main {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+        }
+
+        main {
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+        }
+
+        main > .block {
+            width: 100%;
+            max-width: 330px;
+            padding: 30px;
+            margin: auto;
+            border-radius: 20px;
+            background-color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div class="block col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded">
+        <h4 class="mb-3">
+            Доступ запрещен
+        </h4>
+        <hr>
+        <div class="row align-items-center">
+            <div class="col-auto mb-2">
+                <p>Кажется, Вы оказались здесь случайно о_О</p>
+            </div>
+            <div class="col-auto w-100">
+                <a class="btn btn-primary w-100" href="/home" role="button">На главную</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -34,6 +34,8 @@ class WebSecurityConfig @Autowired constructor(
         }.logout { logout ->
             logout
                 .permitAll()
+        }.exceptionHandling { configurer ->
+            configurer.accessDeniedPage("/access-denied")
         }.userDetailsService(userDetailsService()).build()
 
     @Bean
