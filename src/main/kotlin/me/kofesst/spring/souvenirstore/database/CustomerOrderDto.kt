@@ -31,9 +31,6 @@ data class CustomerOrderDto(
     @ManyToOne
     @JoinColumn(name = "code_id")
     val code: PromoCodeDto? = null,
-
-    @OneToMany(mappedBy = "order")
-    val items: List<OrderItemDto> = emptyList(),
 ) : BaseDto<CustomerOrder> {
     companion object {
         fun fromModel(model: CustomerOrder) = with(model) {
@@ -47,8 +44,7 @@ data class CustomerOrderDto(
                     PromoCodeDto.fromModel(code)
                 } else {
                     null
-                },
-                items = items.map { OrderItemDto.fromModel(it) }
+                }
             )
         }
     }
@@ -59,7 +55,6 @@ data class CustomerOrderDto(
         status = status,
         customer = customer.toModel(),
         point = point.toModel(),
-        code = code?.toModel(),
-        items = items.map { it.toModel() }
+        code = code?.toModel()
     )
 }
