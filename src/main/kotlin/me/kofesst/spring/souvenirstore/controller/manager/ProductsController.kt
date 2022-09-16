@@ -1,6 +1,8 @@
 package me.kofesst.spring.souvenirstore.controller.manager
 
 import me.kofesst.spring.souvenirstore.database.ProductDto
+import me.kofesst.spring.souvenirstore.model.Product
+import me.kofesst.spring.souvenirstore.model.ProductCategory
 import me.kofesst.spring.souvenirstore.model.form.ProductForm
 import me.kofesst.spring.souvenirstore.repository.CategoriesRepository
 import me.kofesst.spring.souvenirstore.repository.ProductsRepository
@@ -55,37 +57,15 @@ class ProductsController @Autowired constructor(
         result: BindingResult,
         model: Model,
     ): String {
-        if (result.hasErrors()) {
-            return "pages/manager/products/add"
-        }
+        val categories = categoriesRepository.findAll().asModels()
+        model.addAttribute("categories", categories)
 
-        val product = productForm.toModel()
-        if (repository.findByTitleIgnoreCase(product.title) != null) {
-            val categories = categoriesRepository.findAll().asModels()
-            model.addAttribute("categories", categories)
-            result.rejectValue("title", "error.existing_title", "Это название уже занято")
-            return "pages/manager/products/add"
-        }
+        val product = checkProduct(
+            productForm = productForm,
+            result = result
+        ) ?: return "pages/manager/products/add"
 
-        val category = categoriesRepository.findByIdOrNull(productForm.categoryId!!)
-        if (category == null) {
-            val categories = categoriesRepository.findAll().asModels()
-            model.addAttribute("categories", categories)
-            result.rejectValue("categoryId", "error.required", "Это обязательное поле")
-            return "pages/manager/products/add"
-        }
-
-        product.category = category.toModel()
         repository.save(ProductDto.fromModel(product))
-        return "redirect:/manager/products"
-    }
-
-    @PostMapping("/delete/{id}")
-    fun delete(
-        @PathVariable("id") id: Long,
-        model: Model,
-    ): String {
-        repository.deleteById(id)
         return "redirect:/manager/products"
     }
 
@@ -110,33 +90,84 @@ class ProductsController @Autowired constructor(
         result: BindingResult,
         model: Model,
     ): String {
+        val categories = categoriesRepository.findAll().asModels()
+        model.addAttribute("categories", categories)
+        model.addAttribute("id", id)
+
+        val product = checkProduct(
+            editing = true,
+            productForm = productForm,
+            result = result
+        ) ?: return "pages/manager/products/add"
+
+        repository.save(ProductDto.fromModel(product))
+        return "redirect:/manager/products"
+    }
+
+    private fun checkProduct(
+        editing: Boolean = false,
+        productForm: ProductForm,
+        result: BindingResult,
+    ): Product? {
         if (result.hasErrors()) {
-            model.addAttribute("id", id)
-            return "pages/manager/products/add"
+            return null
         }
 
+        val product = checkForProductName(
+            compareIds = editing,
+            productForm = productForm,
+            result = result
+        ) ?: return null
+
+        product.category = checkForCategory(
+            productForm = productForm,
+            result = result
+        ) ?: return null
+
+        return product
+    }
+
+    private fun checkForProductName(
+        compareIds: Boolean = false,
+        productForm: ProductForm,
+        result: BindingResult,
+    ): Product? {
         val product = productForm.toModel()
         if (
             with(repository.findByTitleIgnoreCase(product.title)) {
-                this != null && this.id != product.id
+                this != null && if (compareIds) {
+                    this.id != product.id
+                } else {
+                    true
+                }
             }
         ) {
-            val categories = categoriesRepository.findAll().asModels()
-            model.addAttribute("categories", categories)
             result.rejectValue("title", "error.existing_title", "Это название уже занято")
-            return "pages/manager/products/add"
+            return null
         }
 
+        return product
+    }
+
+    private fun checkForCategory(
+        productForm: ProductForm,
+        result: BindingResult,
+    ): ProductCategory? {
         val category = categoriesRepository.findByIdOrNull(productForm.categoryId!!)
         if (category == null) {
-            val categories = categoriesRepository.findAll().asModels()
-            model.addAttribute("categories", categories)
             result.rejectValue("categoryId", "error.required", "Это обязательное поле")
-            return "pages/manager/products/add"
+            return null
         }
 
-        product.category = category.toModel()
-        repository.save(ProductDto.fromModel(product))
+        return category.toModel()
+    }
+
+    @PostMapping("/delete/{id}")
+    fun delete(
+        @PathVariable("id") id: Long,
+        model: Model,
+    ): String {
+        repository.deleteById(id)
         return "redirect:/manager/products"
     }
 }

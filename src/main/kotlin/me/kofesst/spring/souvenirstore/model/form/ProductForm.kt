@@ -35,7 +35,8 @@ data class ProductForm(
                 title = title,
                 description = description,
                 price = price,
-                oldPrice = oldPrice
+                oldPrice = oldPrice,
+                categoryId = category.id
             )
         }
     }

@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProductsRepository : CrudRepository<ProductDto, Long> {
     fun findByTitleIgnoreCase(title: String): ProductDto?
+
+    fun countByCategoryId(id: Long): Long
 }

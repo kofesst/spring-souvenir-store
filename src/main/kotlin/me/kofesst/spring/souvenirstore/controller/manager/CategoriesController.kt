@@ -1,6 +1,7 @@
 package me.kofesst.spring.souvenirstore.controller.manager
 
 import me.kofesst.spring.souvenirstore.database.ProductCategoryDto
+import me.kofesst.spring.souvenirstore.model.ProductCategory
 import me.kofesst.spring.souvenirstore.model.form.ProductCategoryForm
 import me.kofesst.spring.souvenirstore.repository.CategoriesRepository
 import me.kofesst.spring.souvenirstore.repository.ProductsRepository
@@ -36,7 +37,7 @@ class CategoriesController @Autowired constructor(
                 this
             }
         }.map { category ->
-            category to productsRepository.countByCategory_Id(category.id)
+            category to productsRepository.countByCategoryId(category.id)
         }
         model.addAttribute("models", categoriesWithProductsCount)
         return "pages/manager/categories/overview"
@@ -53,26 +54,12 @@ class CategoriesController @Autowired constructor(
         @Valid @ModelAttribute("category") categoryForm: ProductCategoryForm,
         result: BindingResult,
     ): String {
-        if (result.hasErrors()) {
-            return "pages/manager/categories/add"
-        }
-
-        val category = categoryForm.toModel()
-        if (repository.findByDisplayNameIgnoreCase(category.displayName) != null) {
-            result.rejectValue("displayName", "error.existing_title", "Это название уже занято")
-            return "pages/manager/categories/add"
-        }
+        val category = checkCategory(
+            categoryForm = categoryForm,
+            result = result
+        ) ?: return "pages/manager/categories/add"
 
         repository.save(ProductCategoryDto.fromModel(category))
-        return "redirect:/manager/categories"
-    }
-
-    @PostMapping("/delete/{id}")
-    fun delete(
-        @PathVariable("id") id: Long,
-        model: Model,
-    ): String {
-        repository.deleteById(id)
         return "redirect:/manager/categories"
     }
 
@@ -83,7 +70,7 @@ class CategoriesController @Autowired constructor(
     ): String {
         val category = repository.findByIdOrNull(id)?.toModel() ?: return "redirect:/categories"
         model.addAttribute("id", id)
-        model.addAttribute("product", ProductCategoryForm.fromModel(category))
+        model.addAttribute("category", ProductCategoryForm.fromModel(category))
         return "pages/manager/categories/add"
     }
 
@@ -94,18 +81,62 @@ class CategoriesController @Autowired constructor(
         result: BindingResult,
         model: Model,
     ): String {
-        if (result.hasErrors()) {
-            model.addAttribute("id", id)
-            return "pages/manager/categories/add"
-        }
+        model.addAttribute("id", id)
 
-        val category = categoryForm.toModel()
-        if (repository.findByDisplayNameIgnoreCase(category.displayName) != null) {
-            result.rejectValue("displayName", "error.existing_title", "Это название уже занято")
-            return "pages/manager/categories/add"
-        }
+        val category = checkCategory(
+            editing = true,
+            categoryForm = categoryForm,
+            result = result
+        ) ?: return "pages/manager/categories/add"
 
         repository.save(ProductCategoryDto.fromModel(category))
+        return "redirect:/manager/categories"
+    }
+
+    private fun checkCategory(
+        editing: Boolean = false,
+        categoryForm: ProductCategoryForm,
+        result: BindingResult,
+    ): ProductCategory? {
+        if (result.hasErrors()) {
+            return null
+        }
+
+        return checkForCategoryName(
+            compareIds = editing,
+            categoryForm = categoryForm,
+            result = result
+        )
+    }
+
+    private fun checkForCategoryName(
+        compareIds: Boolean = false,
+        categoryForm: ProductCategoryForm,
+        result: BindingResult,
+    ): ProductCategory? {
+        val category = categoryForm.toModel()
+        if (
+            with(repository.findByDisplayNameIgnoreCase(category.displayName)) {
+                this != null && if (compareIds) {
+                    this.id != category.id
+                } else {
+                    true
+                }
+            }
+        ) {
+            result.rejectValue("displayName", "error.existing_title", "Это название уже занято")
+            return null
+        }
+
+        return category
+    }
+
+    @PostMapping("/delete/{id}")
+    fun delete(
+        @PathVariable("id") id: Long,
+        model: Model,
+    ): String {
+        repository.deleteById(id)
         return "redirect:/manager/categories"
     }
 }
