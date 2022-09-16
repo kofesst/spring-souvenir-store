@@ -7,5 +7,5 @@ data class Product(
     val price: Double = 0.0,
     val oldPrice: Double = 0.0,
     val stockAmount: Int = 0,
-    val category: ProductCategory = ProductCategory(),
+    var category: ProductCategory = ProductCategory(),
 )

@@ -1,4 +1,4 @@
-package me.kofesst.spring.souvenirstore.controller
+package me.kofesst.spring.souvenirstore.controller.hr
 
 import me.kofesst.spring.souvenirstore.database.EmployeeDto
 import me.kofesst.spring.souvenirstore.database.UserDto

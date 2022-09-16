@@ -52,12 +52,15 @@ class AuthController @Autowired constructor(
     fun homeRedirect(): String {
         val roles = SecurityContextHolder.getContext().authentication.authorities
         val role = roles.map { UserRole.valueOf(it.authority) }.firstOrNull() ?: return "redirect:/error"
+        println(role)
         return when (role) {
             UserRole.User -> "redirect:/user"
             UserRole.HR -> "redirect:/hr"
             UserRole.Cashier -> "redirect:/cashier"
             UserRole.Accountant -> "redirect:/accountant"
             UserRole.Director -> "redirect:/employees"
+            UserRole.StockMan -> TODO()
+            UserRole.Manager -> "redirect:/manager/categories"
         }
     }
 }

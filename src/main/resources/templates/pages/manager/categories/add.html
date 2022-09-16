@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Добавление категории</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap"/>
+    <link th:replace="blocks/links :: icons"/>
+    <style>
+        html, body, main {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column;
+        }
+
+        main {
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+        }
+
+        main > form {
+            width: 100%;
+            max-width: 330px;
+            padding: 30px;
+            margin: auto;
+            border-radius: 20px;
+            background-color: #6c757d;
+        }
+
+        .input-group-text {
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="blocks/headers :: manager-header(active='categories')"></div>
+<main>
+    <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
+          method="post"
+          th:action="'/manager/categories/' + ${id != null ? 'edit/' + id : 'add'}"
+          th:object="${category}">
+        <h4 class="mb-3" th:text="${id != null ? 'Изменение категории' : 'Новая категория'}"></h4>
+        <hr>
+        <div class="form-row align-items-center">
+            <div class="col-auto mb-2">
+                <label class="sr-only" for="title">Название категории</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">manage_search</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="title" placeholder="Магниты на холодильник"
+                           th:field="*{displayName}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('displayName')}"
+                      th:errors="*{displayName}"></span>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary w-100"
+                        th:text="${id != null ? 'Сохранить' : 'Добавить'}"></button>
+            </div>
+        </div>
+    </form>
+</main>
+</body>
+</html>

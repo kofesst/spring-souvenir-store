@@ -20,6 +20,13 @@ data class ProductForm(
     @field:Positive(message = "Число должно быть положительным")
     @field:Max(value = 1_000_000_000, message = "Слишком большое число")
     val price: Double? = null,
+
+    @field:Positive(message = "Число должно быть положительным")
+    @field:Max(value = 1_000_000_000, message = "Слишком большое число")
+    val oldPrice: Double? = null,
+
+    @field:NotNull(message = "Это обязательное поле")
+    val categoryId: Long? = null,
 ) {
     companion object {
         fun fromModel(model: Product) = with(model) {
@@ -27,7 +34,8 @@ data class ProductForm(
                 id = id,
                 title = title,
                 description = description,
-                price = price
+                price = price,
+                oldPrice = oldPrice
             )
         }
     }
@@ -36,6 +44,7 @@ data class ProductForm(
         id = id,
         title = title!!,
         description = description!!,
-        price = price!!
+        price = price!!,
+        oldPrice = oldPrice!!
     )
 }

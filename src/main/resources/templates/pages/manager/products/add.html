@@ -23,7 +23,7 @@
 
         main > form {
             width: 100%;
-            max-width: 330px;
+            max-width: 550px;
             padding: 30px;
             margin: auto;
             border-radius: 20px;
@@ -40,16 +40,16 @@
     </style>
 </head>
 <body class="bg-light">
-<div th:replace="blocks/headers :: hr-header(active='products')"></div>
+<div th:replace="blocks/headers :: manager-header(active='products')"></div>
 <main>
     <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
           method="post"
-          th:action="'/products/' + ${id != null ? 'edit/' + id : 'add'}"
+          th:action="'/manager/products/' + ${id != null ? 'edit/' + id : 'add'}"
           th:object="${product}">
         <h4 class="mb-3" th:text="${id != null ? 'Изменение товара' : 'Новый товар'}"></h4>
         <hr>
-        <div class="form-row align-items-center">
-            <div class="col-auto mb-2">
+        <div class="row align-items-center">
+            <div class="col-12 mb-2">
                 <label class="sr-only" for="title">Название товара</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -64,7 +64,7 @@
                       th:if="${#fields.hasErrors('title')}"
                       th:errors="*{title}"></span>
             </div>
-            <div class="col-auto mb-2">
+            <div class="col-12 mb-2">
                 <label class="sr-only" for="description">Описание товара</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -79,7 +79,7 @@
                       th:if="${#fields.hasErrors('description')}"
                       th:errors="*{description}"></span>
             </div>
-            <div class="col-auto mb-4">
+            <div class="col-6 mb-2">
                 <label class="sr-only" for="price">Стоимость товара (руб.)</label>
                 <div class="input-group mb-1">
                     <div class="input-group-prepend">
@@ -87,14 +87,49 @@
                             <span class="material-icons">payments</span>
                         </div>
                     </div>
-                    <input type="number" class="form-control" id="price" placeholder="250"
+                    <input type="number" class="form-control" id="price" placeholder="299"
                            th:field="*{price}">
                 </div>
                 <span class="sr-only" style="color: #dc3545"
                       th:if="${#fields.hasErrors('price')}"
                       th:errors="*{price}"></span>
             </div>
-            <div class="col-auto">
+            <div class="col-6 mb-2">
+                <label class="sr-only" for="oldPrice">Старая стоимость товара (руб.)</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">payments</span>
+                        </div>
+                    </div>
+                    <input type="number" class="form-control" id="oldPrice" placeholder="999"
+                           th:field="*{oldPrice}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('oldPrice')}"
+                      th:errors="*{oldPrice}"></span>
+            </div>
+            <div class="col-12 mb-4">
+                <label class="sr-only" for="category">Категория</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">work</span>
+                        </div>
+                    </div>
+                    <select id="category" class="form-select"
+                            th:field="*{categoryId}">
+                        <option th:value="${null}">Выберите...</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:text="${category.displayName}"></option>
+                    </select>
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('categoryId')}"
+                      th:errors="*{categoryId}"></span>
+            </div>
+            <div class="col-12">
                 <button type="submit" class="btn btn-primary w-100"
                         th:text="${id != null ? 'Сохранить' : 'Добавить'}"></button>
             </div>
