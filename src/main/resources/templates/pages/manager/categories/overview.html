@@ -19,6 +19,10 @@
             <button type="submit" class="btn btn-primary">Добавить категорию</button>
         </form>
     </div>
+    <div class="sr-only my-4" style="color: #dc3545">
+        Важно! При удалении категории, товары, привязанные к данной категории, тоже
+        будут удалены.
+    </div>
     <div th:if="${query != null}" class="text-center mt-5">
         <h3 th:text="'Результаты поиска по запросу \'' + ${query} + '\''"></h3>
     </div>

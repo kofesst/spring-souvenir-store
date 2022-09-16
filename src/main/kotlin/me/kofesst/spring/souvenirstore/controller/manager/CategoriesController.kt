@@ -136,6 +136,7 @@ class CategoriesController @Autowired constructor(
         @PathVariable("id") id: Long,
         model: Model,
     ): String {
+        productsRepository.deleteByCategoryId(id)
         repository.deleteById(id)
         return "redirect:/manager/categories"
     }
