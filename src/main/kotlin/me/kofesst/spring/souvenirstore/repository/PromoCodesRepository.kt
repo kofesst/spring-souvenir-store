@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PromoCodesRepository : CrudRepository<PromoCodeDto, Long> {
-
     fun findByCodeIgnoreCase(code: String): PromoCodeDto?
+    fun findByCode(code: String): PromoCodeDto?
 }

@@ -7,35 +7,40 @@ import javax.persistence.*
 @Table(name = "cart")
 data class CartDto(
     @Id
-    @Column(name = "ROWID")
-    val rowId: String = "",
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cart", unique = true, nullable = false)
+    val id: Long = 0,
 
     @OneToOne(cascade = [CascadeType.MERGE])
     @JoinColumn(name = "customer_id")
     val customer: CustomerDto = CustomerDto(),
 
-    @OneToOne(cascade = [CascadeType.MERGE])
-    @JoinColumn(name = "product_id")
-    val product: ProductDto = ProductDto(),
+    @OneToMany(mappedBy = "cart")
+    val items: List<CartItemDto> = emptyList(),
 
-    @Column(name = "count", nullable = false)
-    val count: Int = 0,
+    @ManyToOne
+    @JoinColumn(name = "code_id")
+    val code: PromoCodeDto? = null,
 ) : BaseDto<Cart> {
     companion object {
         fun fromModel(model: Cart) = with(model) {
             CartDto(
-                rowId = rowId,
+                id = id,
                 customer = CustomerDto.fromModel(customer),
-                product = ProductDto.fromModel(product),
-                count = count
+                items = items.map { CartItemDto.fromModel(it) },
+                code = if (code != null) {
+                    PromoCodeDto.fromModel(code!!)
+                } else {
+                    null
+                }
             )
         }
     }
 
     override fun toModel() = Cart(
-        rowId = rowId,
+        id = id,
         customer = customer.toModel(),
-        product = product.toModel(),
-        count = count
+        items = items.map { it.toModel() }.toMutableList(),
+        code = code?.toModel()
     )
 }

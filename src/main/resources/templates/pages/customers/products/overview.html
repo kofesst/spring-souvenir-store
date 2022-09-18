@@ -95,6 +95,12 @@
                        th:if="${product.oldPrice != null}">
                         <small th:text="'Стоимость ' + ${product.oldPrice} + ' руб.'"></small>
                     </p>
+                    <hr>
+                    <div class="row row-cols-2 flex-row-reverse">
+                        <form th:action="'/products/add-to-cart/' + ${product.id}" method="post" class="col-auto">
+                            <button type="submit" class="btn btn-outline-danger">В корзину</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

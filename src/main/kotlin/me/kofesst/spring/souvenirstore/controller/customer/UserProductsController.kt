@@ -1,15 +1,19 @@
 package me.kofesst.spring.souvenirstore.controller.customer
 
+import me.kofesst.spring.souvenirstore.database.CartDto
+import me.kofesst.spring.souvenirstore.database.CartItemDto
+import me.kofesst.spring.souvenirstore.repository.CartItemsRepository
+import me.kofesst.spring.souvenirstore.repository.CartsRepository
 import me.kofesst.spring.souvenirstore.repository.CategoriesRepository
 import me.kofesst.spring.souvenirstore.repository.ProductsRepository
 import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @Controller
 @RequestMapping("/products")
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam
 class UserProductsController @Autowired constructor(
     private val repository: ProductsRepository,
     private val categoriesRepository: CategoriesRepository,
+    private val cartsRepository: CartsRepository,
+    private val cartItemsRepository: CartItemsRepository,
 ) {
     @GetMapping
     fun overview(
@@ -59,5 +65,23 @@ class UserProductsController @Autowired constructor(
         }
         model.addAttribute("models", products)
         return "pages/customers/products/overview"
+    }
+
+    @PostMapping("/add-to-cart/{id}")
+    fun addToCart(
+        @PathVariable("id") productId: Long,
+        user: Principal,
+        model: Model,
+    ): String {
+        val product = repository.findByIdOrNull(productId)?.toModel() ?: return "redirect:/products"
+        val cart = cartsRepository.findByCustomerUserLogin(user.name)?.toModel() ?: return "redirect:/products"
+        cartItemsRepository.save(
+            CartItemDto.fromModel(
+                cart.addProduct(product)
+            ).copy(
+                cart = CartDto.fromModel(cart)
+            )
+        )
+        return "redirect:/products"
     }
 }

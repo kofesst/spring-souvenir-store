@@ -15,5 +15,5 @@ data class CustomerOrder(
         get() = items.sumOf { it.product.price * it.count }
 
     val totalPrice: Double
-        get() = itemsPrice - itemsPrice * (code?.percent ?: 0.0)
+        get() = itemsPrice - itemsPrice * (code?.percent ?: 0.0) / 100
 }
