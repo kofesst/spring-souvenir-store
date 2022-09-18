@@ -10,4 +10,9 @@ data class CartItem(
 
     val oldPrice: Double?
         get() = product.oldPrice?.times(count)
+
+    fun toOrderItem() = OrderItem(
+        count = count,
+        product = product
+    )
 }

@@ -1,5 +1,6 @@
 package me.kofesst.spring.souvenirstore.util
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 val Date.calendar: Calendar
@@ -24,3 +25,10 @@ infix fun Date.yearsUntil(other: Date): Int {
 
     return years
 }
+
+fun Date.format(pattern: String): String {
+    val sdf = SimpleDateFormat(pattern)
+    return sdf.format(this)
+}
+
+fun Date.asTime() = this.format("HH:mm")

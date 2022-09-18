@@ -33,10 +33,15 @@
         </div>
     </form>
     <hr>
-    <h4 th:text="'Всего в корзине: ' + ${cart.size} + ' шт.'"></h4>
-    <h4 th:text="'Итого: ' + ${cart.itemsPrice} + ' руб.'"></h4>
-    <h4 th:text="'Итого включая скидку: ' + ${cart.totalPrice} + ' руб.'"
-        th:if="${cart.code != null}"></h4>
+    <h5 th:text="'Всего в корзине: ' + ${cart.size} + ' шт.'"></h5>
+    <h5 th:text="'Итого: ' + ${cart.itemsPrice} + ' руб.'"></h5>
+    <h5 th:text="'Итого включая скидку: ' + ${cart.totalPrice} + ' руб.'"
+        th:if="${cart.code != null}"></h5>
+    <div class="col-auto" th:if="${cart.size != 0}">
+        <a class="btn btn-primary" href="/cart/order" role="button">
+            Оформить заказ
+        </a>
+    </div>
     <hr>
     <div th:if="${cart.items.isEmpty()}" class="text-center">
         <h3>Корзина пустует 😞</h3>

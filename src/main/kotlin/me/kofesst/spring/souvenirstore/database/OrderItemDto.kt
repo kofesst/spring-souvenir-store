@@ -27,8 +27,7 @@ data class OrderItemDto(
             OrderItemDto(
                 id = id,
                 count = count,
-                product = ProductDto.fromModel(product),
-                order = CustomerOrderDto.fromModel(order)
+                product = ProductDto.fromModel(product)
             )
         }
     }
@@ -36,7 +35,6 @@ data class OrderItemDto(
     override fun toModel() = OrderItem(
         id = id,
         count = count,
-        product = product.toModel(),
-        order = order.toModel()
+        product = product.toModel()
     )
 }

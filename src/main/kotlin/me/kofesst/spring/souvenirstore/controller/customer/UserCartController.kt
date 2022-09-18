@@ -2,17 +2,20 @@ package me.kofesst.spring.souvenirstore.controller.customer
 
 import me.kofesst.spring.souvenirstore.database.CartDto
 import me.kofesst.spring.souvenirstore.database.CartItemDto
-import me.kofesst.spring.souvenirstore.repository.CartItemsRepository
-import me.kofesst.spring.souvenirstore.repository.CartsRepository
-import me.kofesst.spring.souvenirstore.repository.CustomersRepository
-import me.kofesst.spring.souvenirstore.repository.PromoCodesRepository
+import me.kofesst.spring.souvenirstore.database.CustomerOrderDto
+import me.kofesst.spring.souvenirstore.database.OrderItemDto
+import me.kofesst.spring.souvenirstore.model.form.OrderForm
+import me.kofesst.spring.souvenirstore.repository.*
+import me.kofesst.spring.souvenirstore.util.asModels
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
+import javax.validation.Valid
 import kotlin.math.min
 
 @Controller
@@ -20,9 +23,12 @@ import kotlin.math.min
 @PreAuthorize("hasAnyAuthority('User')")
 class UserCartController @Autowired constructor(
     private val repository: CartsRepository,
-    private val itemsRepository: CartItemsRepository,
+    private val cartItemsRepository: CartItemsRepository,
     private val customersRepository: CustomersRepository,
     private val promoCodesRepository: PromoCodesRepository,
+    private val pickupPointsRepository: PickupPointsRepository,
+    private val ordersRepository: OrdersRepository,
+    private val orderItemsRepository: OrderItemsRepository,
 ) {
     @GetMapping
     fun overview(
@@ -36,6 +42,66 @@ class UserCartController @Autowired constructor(
 
         model.addAttribute("cart", cart)
         return "pages/customers/cart/overview"
+    }
+
+    @GetMapping("/order")
+    fun order(
+        orderForm: OrderForm,
+        user: Principal,
+        model: Model,
+    ): String {
+        val cart = repository.findByCustomerUserLogin(user.name)?.toModel() ?: return "redirect:/cart"
+        if (cart.size == 0) {
+            return "redirect:/cart"
+        }
+
+        model.addAttribute("cart", cart)
+        model.addAttribute("order", orderForm)
+
+        val pickupPoints = pickupPointsRepository.findAll().asModels()
+        model.addAttribute("points", pickupPoints)
+        return "pages/customers/cart/order"
+    }
+
+    @PostMapping("/order")
+    fun order(
+        @Valid @ModelAttribute("order") orderForm: OrderForm,
+        result: BindingResult,
+        user: Principal,
+        model: Model,
+    ): String {
+        val pickupPoints = pickupPointsRepository.findAll().asModels()
+        model.addAttribute("points", pickupPoints)
+
+        val cart = repository.findByCustomerUserLogin(user.name)?.toModel() ?: return "redirect:/cart"
+        model.addAttribute("cart", cart)
+
+        if (result.hasErrors()) {
+            return "pages/customers/cart/order"
+        }
+
+        val pickupPoint = pickupPointsRepository.findByIdOrNull(orderForm.pointId!!)
+        if (pickupPoint == null) {
+            result.rejectValue("pointId", "error.required", "Это обязательное поле")
+            return "pages/customers/cart/order"
+        }
+
+        val order = orderForm.toModel(cart).copy(
+            point = pickupPoint.toModel()
+        )
+        val savedOrder = ordersRepository.save(CustomerOrderDto.fromModel(order))
+        orderItemsRepository.saveAll(
+            order.items.map {
+                OrderItemDto.fromModel(it).copy(
+                    order = savedOrder
+                )
+            }
+        )
+
+        cart.code = null
+        repository.save(CartDto.fromModel(cart))
+        cartItemsRepository.deleteByCartId(cart.id)
+        return "redirect:/orders"
     }
 
     @PostMapping("/apply-code")
@@ -69,11 +135,11 @@ class UserCartController @Autowired constructor(
         @PathVariable("id") itemId: Long,
         user: Principal,
     ): String {
-        val item = itemsRepository.findByIdOrNull(itemId)?.toModel() ?: return "redirect:/cart"
+        val item = cartItemsRepository.findByIdOrNull(itemId)?.toModel() ?: return "redirect:/cart"
         val cart = repository.findByCustomerUserLogin(user.name)?.toModel() ?: return "redirect:/cart"
         item.count = min(item.count + 1, Int.MAX_VALUE)
 
-        itemsRepository.save(
+        cartItemsRepository.save(
             CartItemDto.fromModel(item).copy(
                 cart = CartDto.fromModel(cart)
             )
@@ -87,14 +153,14 @@ class UserCartController @Autowired constructor(
         @PathVariable("id") itemId: Long,
         user: Principal,
     ): String {
-        val item = itemsRepository.findByIdOrNull(itemId)?.toModel() ?: return "redirect:/cart"
+        val item = cartItemsRepository.findByIdOrNull(itemId)?.toModel() ?: return "redirect:/cart"
         val cart = repository.findByCustomerUserLogin(user.name)?.toModel() ?: return "redirect:/cart"
         item.count -= 1
 
         if (item.count <= 0) {
-            itemsRepository.deleteById(itemId)
+            cartItemsRepository.deleteById(itemId)
         } else {
-            itemsRepository.save(
+            cartItemsRepository.save(
                 CartItemDto.fromModel(item).copy(
                     cart = CartDto.fromModel(cart)
                 )
@@ -109,7 +175,7 @@ class UserCartController @Autowired constructor(
         @PathVariable("id") itemId: Long,
         user: Principal,
     ): String {
-        itemsRepository.deleteById(itemId)
+        cartItemsRepository.deleteById(itemId)
         return "redirect:/cart"
     }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Оформление заказа</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap"/>
+    <link th:replace="blocks/links :: icons"/>
+    <style th:replace="blocks/styles :: form"></style>
+</head>
+<body class="bg-light">
+<div th:replace="blocks/headers :: customer-header(active='cart')"></div>
+<main>
+    <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
+          action="/cart/order" method="post"
+          th:object="${order}">
+        <h4 class="mb-3">
+            Оформление заказа
+        </h4>
+        <hr>
+        <div class="row align-items-center">
+            <div class="col-12 mb-4">
+                <label class="sr-only" for="position">Пункт выдачи</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">pin_drop</span>
+                        </div>
+                    </div>
+                    <select id="position" class="form-select"
+                            th:field="*{pointId}">
+                        <option th:value="${null}" selected>Выберите...</option>
+                        <option th:each="point : ${points}"
+                                th:value="${point.id}"
+                                th:text="${point.address}"></option>
+                    </select>
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('pointId')}"
+                      th:errors="*{pointId}"></span>
+            </div>
+            <hr>
+            <h5 class="fw-normal" th:if="${cart.code != null}"
+                th:text="'Итого со скидкой: ' + ${cart.totalPrice} + ' руб. (-' + ${cart.code.percent} + '%)'"></h5>
+            <p th:classappend="${cart.code != null ? 'text-muted text-decoration-line-through' : ''}"
+               th:text="'Итого: ' + ${cart.itemsPrice} + ' руб.'"></p>
+            <hr>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary w-100">
+                    Оформить заказ
+                </button>
+            </div>
+        </div>
+    </form>
+</main>
+</body>
+</html>
