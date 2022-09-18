@@ -21,7 +21,7 @@ data class ProductDto(
     val price: Double = 0.0,
 
     @Column(name = "old_price", precision = 2)
-    val oldPrice: Double = 0.0,
+    val oldPrice: Double? = null,
 
     @Column(name = "stock_amount", nullable = false)
     val stockAmount: Int = 0,

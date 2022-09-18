@@ -13,4 +13,11 @@ interface ProductsRepository : CrudRepository<ProductDto, Long> {
 
     @Transactional
     fun deleteByCategoryId(id: Long): Long
+
+
+    fun findByPriceGreaterThanEqualAndPriceLessThanEqual(
+        minimumPrice: Double,
+        maximumPrice: Double,
+    ): List<ProductDto>
+
 }

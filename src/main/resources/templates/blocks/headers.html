@@ -159,5 +159,39 @@
         </div>
     </header>
 </div>
+<div class="container" th:fragment="customer-header">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <a class="d-flex align-items-center col-md-3 mb-2 me-md-0 text-dark text-decoration-none">
+            <span class="fs-4">SouvenirStore</span>
+        </a>
+
+        <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+            <li class="nav-item">
+                <a href="/products" class="nav-link"
+                   th:classappend="${active == 'products' ? 'active' : ''}">
+                    Товары
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/cart" class="nav-link"
+                   th:classappend="${active == 'cart' ? 'active' : ''}">
+                    Корзина
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/orders" class="nav-link"
+                   th:classappend="${active == 'orders' ? 'active' : ''}">
+                    Заказы
+                </a>
+            </li>
+        </ul>
+
+        <div class="col-md-3 text-end">
+            <a class="btn btn-primary" href="/logout" role="button">
+                Выход
+            </a>
+        </div>
+    </header>
+</div>
 </body>
 </html>

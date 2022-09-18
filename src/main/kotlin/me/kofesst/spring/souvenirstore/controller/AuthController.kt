@@ -74,7 +74,7 @@ class AuthController @Autowired constructor(
         val role = roles.map { UserRole.valueOf(it.authority) }.firstOrNull() ?: return "redirect:/error"
         println(role)
         return when (role) {
-            UserRole.User -> "redirect:/user"
+            UserRole.User -> "redirect:/products"
             UserRole.HR -> "redirect:/hr/employees"
             UserRole.Cashier -> "redirect:/cashier"
             UserRole.Accountant -> "redirect:/accountant"
