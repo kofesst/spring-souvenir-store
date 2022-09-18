@@ -5,4 +5,8 @@ data class PromoCode(
     val code: String = "",
     val active: Boolean = false,
     val percent: Double = 0.0,
-)
+) {
+    override fun toString(): String {
+        return "Скидка $percent%"
+    }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Промокоды</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap"/>
+</head>
+<body>
+<div th:replace="blocks/headers :: manager-header(active='promocodes')"></div>
+<div class="container">
+    <div class="row">
+        <form action="/manager/promocodes" method="get"
+              class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+            <input type="search" class="form-control" placeholder="Поиск промокода" aria-label="Search"
+                   name="query" th:value="${query}">
+        </form>
+        <form action="/manager/promocodes/add" method="get"
+              class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+            <button type="submit" class="btn btn-primary">Добавить промокод</button>
+        </form>
+    </div>
+    <div th:if="${query != null}" class="text-center mt-5">
+        <h3 th:text="'Результаты поиска по запросу \'' + ${query} + '\''"></h3>
+    </div>
+    <hr>
+    <div th:if="${models.isEmpty()}" class="text-center">
+        <h3>Промокоды отсутствуют</h3>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3">
+        <div class="col mb-4" th:each="promocode : ${models}">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" th:text="${promocode}"></h5>
+                    <p class="card-text" th:text="${promocode.code}"></p>
+                    <p class="card-text text-muted flex-grow-1">
+                        <small th:text="${promocode.active ? 'Активен' : 'Неактивен'}"></small>
+                    </p>
+                    <hr>
+                    <div class="row row-cols-2 flex-row-reverse">
+                        <form class="col-auto"
+                              th:action="'/manager/promocodes/toggle/' + ${promocode.id}" method="post">
+                            <button type="submit" class="btn btn-outline-danger"
+                            th:text="${promocode.active ? 'Отключить' : 'Активировать'}">
+                            </button>
+                        </form>
+                        <form class="col-auto"
+                              th:action="'/manager/promocodes/edit/' + ${promocode.id}" method="get">
+                            <button type="submit" class="btn btn-outline-primary">Изменить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
