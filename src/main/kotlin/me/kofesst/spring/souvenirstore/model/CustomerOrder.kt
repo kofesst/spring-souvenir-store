@@ -1,5 +1,6 @@
 package me.kofesst.spring.souvenirstore.model
 
+import me.kofesst.spring.souvenirstore.util.format
 import java.util.*
 
 data class CustomerOrder(
@@ -16,4 +17,6 @@ data class CustomerOrder(
 
     val totalPrice: Double
         get() = itemsPrice - itemsPrice * (code?.percent ?: 0.0) / 100
+
+    fun getTimestamp() = orderDate.format("dd.MM.yyyy HH:mm:ss")
 }

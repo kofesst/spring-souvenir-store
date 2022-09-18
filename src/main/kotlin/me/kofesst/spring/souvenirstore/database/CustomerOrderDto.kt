@@ -32,7 +32,7 @@ data class CustomerOrderDto(
     @JoinColumn(name = "code_id")
     val code: PromoCodeDto? = null,
 
-    @OneToMany(cascade = [CascadeType.MERGE])
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.MERGE])
     val items: List<OrderItemDto> = emptyList(),
 ) : BaseDto<CustomerOrder> {
     companion object {
