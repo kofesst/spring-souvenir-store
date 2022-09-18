@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Добавление пункта выдачи</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap"/>
+    <link th:replace="blocks/links :: icons"/>
+    <style th:replace="blocks/styles :: form"></style>
+</head>
+<body class="bg-light">
+<div th:replace="blocks/headers :: manager-header(active='points')"></div>
+<main>
+    <form class="col-md-12 col-lg-12 justify-content-md-center align-items-center shadow bg-body rounded"
+          method="post"
+          th:action="'/manager/points/' + ${id != null ? 'edit/' + id : 'add'}"
+          th:object="${point}">
+        <h4 class="mb-3" th:text="${id != null ? 'Изменение пункта выдачи' : 'Новый пункт выдачи'}"></h4>
+        <hr>
+        <div class="row align-items-center">
+            <div class="col-12 mb-2">
+                <label class="sr-only" for="address">Адрес пункта выдачи</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">pin_drop</span>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" id="address" placeholder="г. Москва, ул. Новослободская, д. 2"
+                           th:field="*{address}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('address')}"
+                      th:errors="*{address}"></span>
+            </div>
+            <div class="col-6 mb-4">
+                <label class="sr-only" for="startTime">Начало работы</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">schedule</span>
+                        </div>
+                    </div>
+                    <input type="time" class="form-control" id="startTime" placeholder="08:00"
+                           th:field="*{startTime}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('startTime')}"
+                      th:errors="*{startTime}"></span>
+            </div>
+            <div class="col-6 mb-4">
+                <label class="sr-only" for="endTime">Конец работы</label>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <span class="material-icons">schedule</span>
+                        </div>
+                    </div>
+                    <input type="time" class="form-control" id="endTime" placeholder="20:00"
+                           th:field="*{endTime}">
+                </div>
+                <span class="sr-only" style="color: #dc3545"
+                      th:if="${#fields.hasErrors('endTime')}"
+                      th:errors="*{endTime}"></span>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary w-100"
+                        th:text="${id != null ? 'Сохранить' : 'Добавить'}"></button>
+            </div>
+        </div>
+    </form>
+</main>
+</body>
+</html>
