@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Заказы</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:replace="blocks/links :: bootstrap">
+    <link th:replace="blocks/links :: icons">
+</head>
+<body>
+<div th:replace="blocks/headers :: stockman-header(active='orders')"></div>
+<div class="container">
+    <div th:if="${models.isEmpty()}" class="text-center">
+        <h3>Новых заказов пока нет</h3>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3">
+        <div class="col mb-4" th:each="order : ${models}">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" th:text="${order.getTimestamp()}"></h5>
+                    <p class="card-text my-0"
+                       th:text="'Статус: ' + ${order.status.displayName}"></p>
+                    <hr>
+                    <p class="card-text"
+                       th:text="'Пункт выдачи: ' + ${order.point.address}"></p>
+                    <p class="card-text my-0 flex-grow-1"
+                       th:text="${order.point}"></p>
+                    <hr>
+                    <p class="fw-normal my-0"
+                       th:if="${order.code != null}"
+                       th:text="'Итого со скидкой: ' + ${order.totalPrice} + ' руб. (-' + ${order.code.percent} + '%)'">
+                    </p>
+                    <p class="my-0"
+                       th:classappend="${order.code != null ? 'text-muted text-decoration-line-through' : ''}">
+                        <small th:text="'Итого: ' + ${order.itemsPrice} + ' руб.'"></small>
+                    </p>
+                    <hr>
+                    <div class="row row-cols-2 flex-row-reverse">
+                        <form th:action="'/stockman/send/' + ${order.id}" method="post" class="col-auto">
+                            <button type="submit" class="btn btn-outline-danger">Отправить заказ</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

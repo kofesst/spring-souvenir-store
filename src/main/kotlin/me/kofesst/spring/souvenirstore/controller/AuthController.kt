@@ -79,7 +79,7 @@ class AuthController @Autowired constructor(
             UserRole.Cashier -> "redirect:/cashier"
             UserRole.Accountant -> "redirect:/accountant"
             UserRole.Director -> "redirect:/employees"
-            UserRole.StockMan -> TODO()
+            UserRole.StockMan -> "redirect:/stockman"
             UserRole.Manager -> "redirect:/manager/categories"
         }
     }

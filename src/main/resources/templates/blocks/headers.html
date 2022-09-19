@@ -46,15 +46,9 @@
 
         <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
             <li class="nav-item">
-                <a href="/stockman/orders/waiting" class="nav-link"
-                   th:classappend="${active == 'waiting-orders' ? 'active' : ''}">
-                    Новые заказы
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/stockman/orders/prepared" class="nav-link"
-                   th:classappend="${active == 'prepared-orders' ? 'active' : ''}">
-                    Подготовленные заказы
+                <a href="/stockman" class="nav-link"
+                   th:classappend="${active == 'orders' ? 'active' : ''}">
+                    Заказы
                 </a>
             </li>
         </ul>

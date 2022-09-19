@@ -6,7 +6,7 @@ import java.util.*
 data class CustomerOrder(
     val id: Long = 0,
     val orderDate: Date = Date(),
-    val status: OrderStatus = OrderStatus.Preparing,
+    var status: OrderStatus = OrderStatus.Preparing,
     val customer: Customer = Customer(),
     val point: PickupPoint = PickupPoint(),
     val code: PromoCode? = null,
